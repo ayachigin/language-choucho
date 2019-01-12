@@ -1,0 +1,5 @@
+.stack-work/
+language-choucho.cabal
+.vscode
+haddock
+*~
