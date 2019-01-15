@@ -1,5 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Language.Choucho.Parser where
+module Language.Choucho.Parser 
+    ( parse
+    , dictionary
+    , talk
+    , wordGroup
+    , replyTalk
+    , talkString
+    ) where
 
 import Text.Parsec hiding (newline)
 import Text.Parsec.String
