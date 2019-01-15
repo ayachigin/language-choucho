@@ -11,7 +11,6 @@ data Fomura =
 type Dictionary = [ChouchoTypes]
 
 data ChouchoTypes = 
-    ChouchoComment Comment |
     ChouchoTalk Talk |
     ChouchoReply ReplyTalk |
     ChouchoWords WordGroup
