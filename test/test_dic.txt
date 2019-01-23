@@ -1,14 +1,15 @@
 comment
 strings
 
-＊test
+＊test  
 talk
 ＿choice bar
 ＿choice2 baz
 
-＊「my key words
+＊「my key words 
 hanako
 taro
-＠hoge
+
+＠hoge 
 fuga
 foo
