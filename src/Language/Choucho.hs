@@ -7,6 +7,7 @@ import Data.List (isInfixOf)
 import System.Random (randomRIO)
 import Control.Lens
 import Control.Applicative ((<|>))
+import Text.Parsec (ParseError)
 
 import Language.Choucho.Types
 import Language.Choucho.Parser (parse, dictionary)
@@ -56,11 +57,8 @@ getReplyTalk c s = do
                   else a
         
 
-parseChoucho :: String -> Maybe Choucho
-parseChoucho s = 
-    case parse dictionary "" s of
-        Right dic -> Just $ foldl f emptyChoucho dic
-        Left _ -> Nothing
+parseChoucho :: String -> Either ParseError Choucho
+parseChoucho s = foldl f emptyChoucho <$> parse dictionary "" s
     where
         f c (ChouchoTalk t) =
             c & talk %~ Map.insertWith (++) (tag t) ([content t])
@@ -68,4 +66,3 @@ parseChoucho s =
             c & reply %~ Map.insertWith (++) (keywords t) ([replyContent t])
         f c (ChouchoWords (WordGroup s v)) =
             c & wordGroup %~ Map.insertWith (++) s v
-

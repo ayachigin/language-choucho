@@ -16,7 +16,6 @@ spec = do
         it "parse TalkString until left paren" $
             parse talkString "" "hogefuga（" `shouldBe`
             Right (TalkString "hogefuga")
-    --{--
     describe "talk" $ do
         it "parse a talk" $ 
             parse talk "" "＊hoge\nfuga\n＿foo bar\n＿piyo moge" `shouldBe`
@@ -25,5 +24,4 @@ spec = do
     describe "dictionary" $ do
         it "parse Dictionary" $
             parse dictionary "" s `shouldBe`
-            Right [ChouchoTalk (Talk {tag = "test", content = [TalkString "talk",Newline,Choices [("choice","bar"),("choice2","baz")]]}),ChouchoReply (ReplyTalk {keywords = ["my","key","words"], replyContent = [TalkString "hanako",Newline,TalkString "taro",Newline]}),ChouchoWords (WordGroup "hoge" ["fuga","foo"])]
-    --}
+            Right [ChouchoTalk (Talk {tag = "test", content = [TalkString "talk",Newline,Choices [("choice","bar"),("choice2","baz")]]}),ChouchoReply (ReplyTalk {keywords = ["my","key","words"], replyContent = [TalkString "hanako",Newline,TalkString "taro",Newline,Newline]}),ChouchoWords (WordGroup "hoge" ["fuga","foo"])]
