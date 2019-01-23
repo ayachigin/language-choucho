@@ -20,9 +20,6 @@ import Data.Maybe
 -- |
 -- dictionary
 -- 
--- >>> s <- readFile "test/test_dic.txt"
--- >>> parse dictionary "" s
--- Right [ChouchoTalk (Talk {tag = "test", content = [TalkString "talk",Newline,Choices [("choice","bar"),("choice2","baz")]]}),ChouchoReply (ReplyTalk {keywords = ["my","key","words"], replyContent = [TalkString "hanako",Newline,TalkString "taro",Newline]}),ChouchoWords (WordGroup "hoge" ["fuga","foo"])]
 dictionary :: Parser Dictionary
 dictionary = headerComment >> many chouchoTypes
     where
