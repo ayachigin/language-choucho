@@ -3,3 +3,4 @@ language-choucho.cabal
 .vscode
 haddock
 *~
+stack.yaml.lock
