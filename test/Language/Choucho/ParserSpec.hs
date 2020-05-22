@@ -28,6 +28,4 @@ spec = do
     describe "dictionary" $ do
         it "parse Dictionary" $
             parse dictionary "" s `shouldBe`
-            Right [ ChouchoTalk (Talk {tag = "test",content = [TalkString "talk",Newline, Newline]})
-                  , ChouchoReply (ReplyTalk {keywords = ["my","key","words"], replyContent = [TalkString "hanako",Newline,TalkString "taro",Newline,Newline]})
-                  , ChouchoWords (WordGroup "hoge" ["fuga","foo"])]
+            Right [ChouchoTalk (Talk {tag = "test", content = [TalkString "talk",Newline,Newline]}),ChouchoWords (WordGroup "hoge" ["fuga","foo"]),ChouchoReply (ReplyTalk {keywords = ["my","key","words"], replyContent = [TalkString "hanako",Newline,TalkString "taro",Newline,Newline]}),ChouchoQuestion (Question (Just "title") "some\ntext\n" [("piyo","moge"),("foo","bar")])]

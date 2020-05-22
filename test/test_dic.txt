@@ -4,10 +4,16 @@ strings
 ＊test  
 talk
 
+＠hoge 
+fuga
+foo
+
 ＊「my key words 
 hanako
 taro
 
-＠hoge 
-fuga
-foo
+？title
+some
+text
+＿piyo  moge
+＿foo   bar

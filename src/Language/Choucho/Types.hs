@@ -14,7 +14,7 @@ data ChouchoTypes =
     ChouchoTalk Talk |
     ChouchoReply ReplyTalk |
     ChouchoWords WordGroup |
-    ChouchoButtons Question
+    ChouchoQuestion Question
     deriving (Show, Read, Eq)
 
 data TalkContent = 

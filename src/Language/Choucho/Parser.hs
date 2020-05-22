@@ -18,6 +18,9 @@ import Control.Monad (unless)
 import Language.Choucho.Types
 import Data.Maybe
 
+specialSyntax :: Parser ()
+specialSyntax = eof <|> (sol >> lookAhead (oneOf "＊＠？＃") >> return ())
+
 -- |
 -- dictionary
 -- 
@@ -28,6 +31,7 @@ dictionary = headerComment >> many chouchoTypes
             ChouchoReply <$> try replyTalk 
             <|> ChouchoTalk <$> talk 
             <|> ChouchoWords <$> wordGroup
+            <|> ChouchoQuestion <$> question
 
 -- |
 -- talk
@@ -47,7 +51,7 @@ talk = do
 -- |
 -- wordGroup
 -- 
--- >>> parse wordGroup "" "＠hoge\nfuga\nfoo\nbar\n"
+-- >>> parse wordGroup "" "＠hoge\nfuga\nfoo\nbar\n＊"
 -- Right (WordGroup "hoge" ["fuga","foo","bar"])
 wordGroup :: Parser WordGroup
 wordGroup = do
@@ -56,10 +60,9 @@ wordGroup = do
     s <- many $ noneOf "\n\r 　"
     many $ oneOf " 　"
     newline
-    cs <- manyTill anyChar end
+    cs <- manyTill anyChar specialSyntax
     return . WordGroup s . filter (/= "") $ lines cs
     where
-        end = eof <|> (sol >> oneOf "＠＊？" >> return ()) 
         newline' = newline >> return ()
 
 -- |
@@ -88,12 +91,7 @@ space' = oneOf " 　" >> return ()
 -- >>> parse headerComment "" "hoge\n＠"
 -- Right (Comment "hoge\n")
 headerComment :: Parser TalkContent
-headerComment = Comment <$> manyTill anyChar endOfComment 
-    where
-        endOfComment = do
-            sol
-            lookAhead $ oneOf "＠＊？"
-            return ()
+headerComment = Comment <$> manyTill anyChar specialSyntax
 
 -- |
 -- talkContents
@@ -101,9 +99,8 @@ headerComment = Comment <$> manyTill anyChar endOfComment
 -- >>> parse talkContents "" "hoge（fuga）\n"
 -- Right [TalkString "hoge",Call "fuga",Newline]
 talkContents :: Parser [TalkContent]
-talkContents = manyTill talkContent end
+talkContents = manyTill talkContent specialSyntax
     where
-        end = eof <|> (sol >> lookAhead (oneOf "＊＠？") >> return ())
         talkContent = 
             lineComment <|>
             talkString <|>
@@ -125,12 +122,11 @@ question = do
     newline
     messageText <- manyTill anyChar endOfText
     question <- many1 choices'
-    manyTill anyChar end
+    manyTill anyChar specialSyntax
     let title' = if title == "" then Nothing else Just title
     return $ Question title' messageText question
     where
         endOfText = (sol >> lookAhead (char '＿')) >> return ()
-        end = eof <|> (sol >> lookAhead (oneOf "＊＠？") >> return ())
         
 
 
@@ -170,7 +166,7 @@ choices' = do
     name <- many1 $ noneOf " 　"
     skipMany1 space
     label <- many1 $ noneOf "\n\r"
-    skipMany newline
+    skipMany (newline <|> lineComment)
     return (name, label)
 
 -- |
