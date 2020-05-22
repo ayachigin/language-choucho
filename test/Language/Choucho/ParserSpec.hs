@@ -18,10 +18,16 @@ spec = do
             Right (TalkString "hogefuga")
     describe "talk" $ do
         it "parse a talk" $ 
-            parse talk "" "＊hoge\nfuga\n＿foo bar\n＿piyo moge" `shouldBe`
-            Right (Talk "hoge" [TalkString "fuga",Newline,Choices [("foo","bar"),("piyo","moge")]])
+            parse talk "" "＊hoge\nfuga\n\n＊foo" `shouldBe`
+            Right (Talk "hoge" [TalkString "fuga",Newline, Newline])
+    describe "Question" $ do
+        it "parse a questions" $ 
+            parse question "" "？hoge\nfuga\nhoge\n＿foo  bar\n＿piyo moge\n＊foo" `shouldBe`
+            Right (Question (Just "hoge") "fuga\nhoge\n" [("foo", "bar"), ("piyo", "moge")])
     s <- runIO $ readFile "test/test_dic.txt" 
     describe "dictionary" $ do
         it "parse Dictionary" $
             parse dictionary "" s `shouldBe`
-            Right [ChouchoTalk (Talk {tag = "test", content = [TalkString "talk",Newline,Choices [("choice","bar"),("choice2","baz")]]}),ChouchoReply (ReplyTalk {keywords = ["my","key","words"], replyContent = [TalkString "hanako",Newline,TalkString "taro",Newline,Newline]}),ChouchoWords (WordGroup "hoge" ["fuga","foo"])]
+            Right [ ChouchoTalk (Talk {tag = "test",content = [TalkString "talk",Newline, Newline]})
+                  , ChouchoReply (ReplyTalk {keywords = ["my","key","words"], replyContent = [TalkString "hanako",Newline,TalkString "taro",Newline,Newline]})
+                  , ChouchoWords (WordGroup "hoge" ["fuga","foo"])]

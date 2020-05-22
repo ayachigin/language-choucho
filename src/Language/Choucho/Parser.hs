@@ -4,6 +4,7 @@ module Language.Choucho.Parser
     , dictionary
     , talk
     , wordGroup
+    , question
     , replyTalk
     , talkString
     ) where
@@ -58,9 +59,8 @@ wordGroup = do
     cs <- manyTill anyChar end
     return . WordGroup s . filter (/= "") $ lines cs
     where
-        end = eof <|> (sol >> oneOf "＠＊" >> return ()) 
+        end = eof <|> (sol >> oneOf "＠＊？" >> return ()) 
         newline' = newline >> return ()
-
 
 -- |
 -- replyTalk
@@ -92,24 +92,46 @@ headerComment = Comment <$> manyTill anyChar endOfComment
     where
         endOfComment = do
             sol
-            lookAhead $ oneOf "＠＊"
+            lookAhead $ oneOf "＠＊？"
             return ()
 
 -- |
 -- talkContents
 --
--- >>> parse talkContents "" "hoge（fuga）\n＿hoge fuga\n＿foo bar"
--- Right [TalkString "hoge",Call "fuga",Newline,Choices [("hoge","fuga"),("foo","bar")]]
+-- >>> parse talkContents "" "hoge（fuga）\n"
+-- Right [TalkString "hoge",Call "fuga",Newline]
 talkContents :: Parser [TalkContent]
 talkContents = manyTill talkContent end
     where
-        end = eof <|> (sol >> lookAhead (oneOf "＊＠") >> return ())
+        end = eof <|> (sol >> lookAhead (oneOf "＊＠？") >> return ())
         talkContent = 
             lineComment <|>
-            choices <|>
             talkString <|>
             call <|>
             newline
+
+-- |
+-- question
+-- 
+-- >>> parse question "" "？title\nsome\ntext\n\n＿hoge    fuga\npiyo   moge\n\n＠"
+-- Right (Question (Just "title") "some\ntext\n\n" [("hoge","fuga")])
+-- 
+question :: Parser Question
+question = do
+    sol
+    char '？'
+    title <- many $ noneOf "\n\r 　"
+    skipMany $ oneOf " 　"
+    newline
+    messageText <- manyTill anyChar endOfText
+    question <- many1 choices'
+    manyTill anyChar end
+    let title' = if title == "" then Nothing else Just title
+    return $ Question title' messageText question
+    where
+        endOfText = (sol >> lookAhead (char '＿')) >> return ()
+        end = eof <|> (sol >> lookAhead (oneOf "＊＠？") >> return ())
+        
 
 
 -- |
@@ -137,16 +159,10 @@ lineComment = do
     return . Comment $ s
 
 -- |
--- choices
+-- choices'
 --
--- >>> parse choices "" "＿hoge fuga\n＿foo bar\n\n"
--- Right (Choices [("hoge","fuga"),("foo","bar")])
-choices :: Parser TalkContent
-choices = do
-    sol
-    lookAhead $ char '＿'
-    Choices <$> many choices'
-
+-- >>> parse (many1 choices') "" "＿hoge fuga\n＿foo bar\n\n"
+-- Right [("hoge","fuga"),("foo","bar")]
 choices' :: Parser (String, String)
 choices' = do
     sol

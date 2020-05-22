@@ -3,8 +3,6 @@ strings
 
 ＊test  
 talk
-＿choice bar
-＿choice2 baz
 
 ＊「my key words 
 hanako
