@@ -19,7 +19,7 @@ spec = do
     describe "talk" $ do
         it "parse a talk" $ 
             parse talk "" "＊hoge\nfuga\n\n＊foo" `shouldBe`
-            Right (Talk "hoge" [TalkString "fuga",Newline, Newline])
+            Right (Talk "hoge" [TalkString "fuga"])
     describe "Question" $ do
         it "parse a questions" $ 
             parse question "" "？hoge\nfuga\nhoge\n＿foo  bar\n＿piyo moge\n＊foo" `shouldBe`
@@ -28,4 +28,7 @@ spec = do
     describe "dictionary" $ do
         it "parse Dictionary" $
             parse dictionary "" s `shouldBe`
-            Right [ChouchoTalk (Talk {tag = "test", content = [TalkString "talk",Newline,Newline]}),ChouchoWords (WordGroup "hoge" ["fuga","foo"]),ChouchoReply (ReplyTalk {keywords = ["my","key","words"], replyContent = [TalkString "hanako",Newline,TalkString "taro",Newline,Newline]}),ChouchoQuestion (Question (Just "title") "some\ntext\n" [("piyo","moge"),("foo","bar")])]
+            Right [ ChouchoTalk (Talk {tag = "test", content = [TalkString "talk"]})
+                  , ChouchoWords (WordGroup "hoge" ["fuga","foo"])
+                  , ChouchoReply (ReplyTalk {keywords = ["my","key","words"], replyContent = [TalkString "hanako\ntaro"]})
+                  , ChouchoQuestion (Question (Just "title") "some\ntext\n" [("piyo","moge"),("foo","bar")])]

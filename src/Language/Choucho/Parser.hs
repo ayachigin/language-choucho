@@ -96,8 +96,8 @@ headerComment = Comment <$> manyTill anyChar specialSyntax
 -- |
 -- talkContents
 --
--- >>> parse talkContents "" "hoge（fuga）\n"
--- Right [TalkString "hoge",Call "fuga",Newline]
+-- >>> parse talkContents "" "hoge（fuga）foo\n"
+-- Right [TalkString "hoge",Call "fuga",TalkString "foo"]
 talkContents :: Parser [TalkContent]
 talkContents = manyTill talkContent specialSyntax
     where
@@ -185,10 +185,12 @@ call =
 --
 -- >>> parse talkString "" "hoge（"
 -- Right (TalkString "hoge")
--- >>> parse talkString "" "fuga\n"
+-- >>> parse talkString "" "fuga\n＠"
 -- Right (TalkString "fuga")
 talkString :: Parser TalkContent
-talkString = TalkString <$> many1 (noneOf "（\r\n")
+talkString = do
+    s <- many1 (noneOf "（＠＊？")
+    return . TalkString . reverse . dropWhile (=='\n') . reverse $ s
 
 -- |
 -- newline
