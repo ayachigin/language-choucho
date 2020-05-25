@@ -4,3 +4,5 @@ language-choucho.cabal
 haddock
 *~
 stack.yaml.lock
+*.cache
+*.lock
