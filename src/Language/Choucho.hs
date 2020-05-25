@@ -1,5 +1,8 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Language.Choucho where
+module Language.Choucho 
+( module Language.Choucho.Types
+, module Language.Choucho
+) where
 
 import qualified Data.Map as Map
 import Data.Maybe (fromJust, fromMaybe)
