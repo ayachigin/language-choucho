@@ -59,8 +59,7 @@ getReplyTalk c s =
         _ -> getRandomTalk c
     where
         talks = Map.foldrWithKey f Nothing $ c ^. reply
-        key = reverse . dropWhile isSpace . reverse . dropWhile isSpace $ s
-        f k v a = if elem s k 
+        f k v a = if any (`isInfixOf`s) k
                   then Just v
                   else a
         
@@ -69,8 +68,8 @@ parseChoucho :: String -> Either ParseError Choucho
 parseChoucho s = foldl f emptyChoucho <$> parse dictionary "" s
     where
         f c (ChouchoTalk t) =
-            c & talk %~ Map.insertWith (++) (tag t) ([content t])
+            c & talk %~ Map.insertWith (++) (tag t) [content t]
         f c (ChouchoReply t) = 
-            c & reply %~ Map.insertWith (++) (keywords t) ([replyContent t])
+            c & reply %~ Map.insertWith (++) (keywords t) [replyContent t]
         f c (ChouchoWords (WordGroup s v)) =
             c & wordGroup %~ Map.insertWith (++) s v
