@@ -40,5 +40,5 @@ data WordGroup =
     deriving (Show, Read, Eq)
 
 data Question = 
-    Question (Maybe String) String [(String, String)]
+    Question String String [(String, String)]
     deriving (Show, Read, Eq)

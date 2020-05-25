@@ -111,7 +111,7 @@ talkContents = manyTill talkContent specialSyntax
 -- question
 -- 
 -- >>> parse question "" "？title\nsome\ntext\n\n＿hoge    fuga\npiyo   moge\n\n＠"
--- Right (Question (Just "title") "some\ntext\n\n" [("hoge","fuga")])
+-- Right (Question "title" "some\ntext\n\n" [("hoge","fuga")])
 -- 
 question :: Parser Question
 question = do
@@ -123,8 +123,7 @@ question = do
     messageText <- manyTill anyChar endOfText
     question <- many1 choices'
     manyTill anyChar specialSyntax
-    let title' = if title == "" then Nothing else Just title
-    return $ Question title' messageText question
+    return $ Question title messageText question
     where
         endOfText = (sol >> lookAhead (char '＿')) >> return ()
         
