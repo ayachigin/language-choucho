@@ -19,12 +19,13 @@ import Language.Choucho.Parser (parse, dictionary)
 type TalkContents = [TalkContent]
 
 emptyChoucho :: Choucho
-emptyChoucho = Choucho Map.empty Map.empty Map.empty
+emptyChoucho = Choucho Map.empty Map.empty Map.empty Map.empty
 
 data Choucho = Choucho 
     { _talk :: Map.Map String [[TalkContent]]
     , _reply :: Map.Map [String] [[TalkContent]]
     , _wordGroup :: Map.Map String [String] 
+    , _questions :: Map.Map String [(String, [String])]
     } deriving (Show, Read)
 
 makeLenses ''Choucho
@@ -73,3 +74,5 @@ parseChoucho s = foldl f emptyChoucho <$> parse dictionary "" s
             c & reply %~ Map.insertWith (++) (keywords t) [replyContent t]
         f c (ChouchoWords (WordGroup s v)) =
             c & wordGroup %~ Map.insertWith (++) s v
+        f c (ChouchoQuestion (Question t m ls)) =
+            c & questions %~ Map.insertWith (++) t [(m, ls)]
