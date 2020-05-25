@@ -2,7 +2,7 @@
 module Language.Choucho where
 
 import qualified Data.Map as Map
-import Data.Maybe (fromJust)
+import Data.Maybe (fromJust, fromMaybe)
 import Data.List (isInfixOf)
 import System.Random (randomRIO)
 import Control.Lens
@@ -31,8 +31,11 @@ getTalk c key = do
     return $ t !! ix
     where
         key' = maybe "" id key
-        t = maybe [[TalkString "該当するトークがありません"]] id $
-            Map.lookup key' (c ^. talk)
+        -- 該当キーのトークを探して、なかったらランダムトークを返す
+        -- ランダムトークもなかったらエラーメッセージを返す
+        t = fromMaybe [[TalkString "該当するトークがありません"]] $ 
+                Map.lookup key' (c ^. talk) <|> 
+                Map.lookup "" (c ^. talk)
         l = length t
 
 getRandomTalk :: Choucho -> IO [TalkContent]
