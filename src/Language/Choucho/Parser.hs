@@ -42,7 +42,7 @@ talk :: Parser Talk
 talk = do
     sol
     char '＊'
-    s <- many1 $ noneOf "\n\r 　"
+    s <- many $ noneOf "\n\r 　"
     many $ oneOf " 　"
     newline
     cs <- talkContents

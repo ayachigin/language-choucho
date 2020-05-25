@@ -5,6 +5,7 @@ module Language.Choucho
 ) where
 
 import qualified Data.Map as Map
+import Data.Char (isSpace)
 import Data.Maybe (fromJust, fromMaybe)
 import Data.List (isInfixOf)
 import System.Random (randomRIO)
@@ -50,7 +51,7 @@ getRandomTalk c = getTalk c Nothing
 -- 話しかけられた語を含むリプライトークがあったらそれを返す
 -- なければランダムトーク
 getReplyTalk :: Choucho -> String -> IO [TalkContent]
-getReplyTalk c s = do
+getReplyTalk c s = 
     case talks of
         Just t -> do
             ix <- randomRIO (0, length t - 1)
@@ -58,7 +59,8 @@ getReplyTalk c s = do
         _ -> getRandomTalk c
     where
         talks = Map.foldrWithKey f Nothing $ c ^. reply
-        f k v a = if any (isInfixOf s) k 
+        key = reverse . dropWhile isSpace . reverse . dropWhile isSpace $ s
+        f k v a = if elem s k 
                   then Just v
                   else a
         
