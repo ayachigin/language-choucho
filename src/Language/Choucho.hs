@@ -63,7 +63,25 @@ getReplyTalk c s =
         f k v a = if any (`isInfixOf`s) k
                   then Just v
                   else a
-        
+
+getQuestion :: Choucho -> String -> IO (Maybe Question)
+getQuestion c s = case qs of
+                    Just questions -> do
+                        ix <- randomRIO (0, length questions - 1)
+                        let (m, ls) = questions !! ix
+                        return . Just $ Question s m ls
+                    _              -> return Nothing
+    where
+        qs = Map.lookup s $ c ^. questions
+
+getWord :: Choucho -> String -> IO String
+getWord c s = case ws of
+                Just words -> do
+                    ix <- randomRIO (0, length words - 1)
+                    return $ words !! ix
+                _          -> return $ "(" <> s <> ")"
+    where
+        ws = Map.lookup s $ c ^. wordGroup
 
 parseChoucho :: String -> Either ParseError Choucho
 parseChoucho s = foldl f emptyChoucho <$> parse dictionary "" s
