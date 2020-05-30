@@ -30,10 +30,13 @@ data Choucho = Choucho
 
 makeLenses ''Choucho
 
+pickOne :: [a] -> IO a
+pickOne ls = do
+    ix <- randomRIO (0, length ls -1)
+    return $ ls !! ix
+
 getTalk :: Choucho -> Maybe String -> IO [TalkContent]
-getTalk c key = do
-    ix <- randomRIO (0, l - 1)
-    return $ t !! ix
+getTalk c key = pickOne t
     where
         key' = maybe "" id key
         -- 該当キーのトークを探して、なかったらランダムトークを返す
