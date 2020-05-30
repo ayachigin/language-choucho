@@ -134,7 +134,7 @@ question = do
     messageText <- manyTill anyChar endOfText
     question <- many1 choices'
     manyTill anyChar specialSyntax
-    return $ Question title messageText $ map fst question
+    return $ Question title messageText $ question
     where
         endOfText = (sol >> lookAhead (char '＿')) >> return ()
         

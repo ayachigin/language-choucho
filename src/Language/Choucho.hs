@@ -25,7 +25,7 @@ data Choucho = Choucho
     { _talk :: Map.Map String [[TalkContent]]
     , _reply :: Map.Map [String] [[TalkContent]]
     , _wordGroup :: Map.Map String [String] 
-    , _questions :: Map.Map String [(String, [String])]
+    , _questions :: Map.Map String [(String, [(String, String)])]
     } deriving (Show, Read)
 
 makeLenses ''Choucho
