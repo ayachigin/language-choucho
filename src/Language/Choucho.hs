@@ -38,7 +38,7 @@ pickOne ls = do
 getTalk :: Choucho -> Maybe String -> IO [TalkContent]
 getTalk c key = pickOne t
     where
-        key' = maybe "" id key
+        key' = fromMaybe "" key
         -- 該当キーのトークを探して、なかったらランダムトークを返す
         -- ランダムトークもなかったらエラーメッセージを返す
         t = fromMaybe [[TalkString "該当するトークがありません"]] $ 
@@ -57,9 +57,7 @@ getRandomTalk c = getTalk c Nothing
 getReplyTalk :: Choucho -> String -> IO [TalkContent]
 getReplyTalk c s = 
     case talks of
-        Just t -> do
-            ix <- randomRIO (0, length t - 1)
-            return $ t !! ix
+        Just t -> pickOne t
         _ -> getRandomTalk c
     where
         talks = Map.foldrWithKey f Nothing $ c ^. reply
@@ -70,8 +68,7 @@ getReplyTalk c s =
 getQuestion :: Choucho -> String -> IO (Maybe Question)
 getQuestion c s = case qs of
                     Just questions -> do
-                        ix <- randomRIO (0, length questions - 1)
-                        let (m, ls) = questions !! ix
+                        (m, ls) <- pickOne questions
                         return . Just $ Question s m ls
                     _              -> return Nothing
     where
