@@ -77,14 +77,11 @@ getQuestion c s = case qs of
     where
         qs = Map.lookup s $ c ^. questions
 
-getWord :: Choucho -> String -> IO String
-getWord c s = case ws of
-                Just words -> do
-                    ix <- randomRIO (0, length words - 1)
-                    return $ words !! ix
-                _          -> return $ "(" <> s <> ")"
+getWord :: Choucho -> String -> IO (Maybe String)
+getWord c s = f $ Map.lookup s $ c ^. wordGroup
     where
-        ws = Map.lookup s $ c ^. wordGroup
+        f Nothing = return Nothing 
+        f (Just ws) = Just <$> pickOne ws
 
 parseChoucho :: String -> Either ParseError Choucho
 parseChoucho s = foldl f emptyChoucho <$> parse dictionary "" s
