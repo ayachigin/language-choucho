@@ -10,6 +10,7 @@ foo
 
 ＊「my key words 
 hanako
+＃コメント
 taro
 
 ？title

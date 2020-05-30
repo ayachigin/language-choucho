@@ -13,13 +13,13 @@ import Text.Parsec hiding (newline)
 import Text.Parsec.String
 import Text.ParserCombinators.Parsec.Char hiding (newline)
 import qualified Text.ParserCombinators.Parsec.Char as P
-import Control.Monad (unless)
+import Control.Monad (unless, void)
 
 import Language.Choucho.Types
 import Data.Maybe
 
 specialSyntax :: Parser ()
-specialSyntax = eof <|> (sol >> lookAhead (oneOf "＊＠？＃") >> return ())
+specialSyntax = eof <|> (sol >> lookAhead (oneOf "＊＠？") >> return ())
 
 -- |
 -- dictionary
@@ -45,8 +45,16 @@ talk = do
     s <- many $ noneOf "\n\r 　"
     many $ oneOf " 　"
     newline
-    cs <- talkContents
+    cs <- joinTalkStrings [] <$> talkContents
     return $ Talk s cs
+
+joinTalkStrings :: [TalkContent] -> [TalkContent] -> [TalkContent]
+joinTalkStrings acc [] = reverse acc
+joinTalkStrings (TalkString s1: acc) (TalkString s2: ls) =
+    joinTalkStrings (TalkString (s1<>"\n"<>s2):acc) ls
+joinTalkStrings acc (Comment _: ls) =
+    joinTalkStrings acc ls
+joinTalkStrings acc (l:ls) = joinTalkStrings (l:acc) ls
 
 -- |
 -- wordGroup
@@ -76,7 +84,7 @@ replyTalk = do
     string "＊「"
     s <- sepEndBy1 keyword (many1 $ oneOf " 　")
     newline
-    cs <- talkContents
+    cs <- joinTalkStrings [] <$> talkContents
     return $ ReplyTalk s cs
     where
         keyword = many1 $ noneOf "\n\r 　"            
@@ -99,13 +107,16 @@ headerComment = Comment <$> manyTill anyChar specialSyntax
 -- >>> parse talkContents "" "hoge（fuga）foo\n"
 -- Right [TalkString "hoge",Call "fuga",TalkString "foo"]
 talkContents :: Parser [TalkContent]
-talkContents = manyTill talkContent specialSyntax
+talkContents = do
+    cs <- manyTill talkContent specialSyntax
+    return $ dropTail (==Newline) cs
     where
+        dropTail f = reverse . dropWhile f . reverse 
         talkContent = 
             lineComment <|>
-            talkString <|>
             call <|>
-            newline
+            newline <|>
+            talkString
 
 -- |
 -- question
@@ -148,9 +159,9 @@ sol = do
 lineComment :: Parser TalkContent
 lineComment = do
     sol
-    _ <- oneOf "＃"
+    char '＃'
     s <- many $ noneOf "\n\r"
-    skipMany newline <|> eof
+    newline
     return . Comment $ s
 
 -- |
@@ -188,8 +199,11 @@ call =
 -- Right (TalkString "fuga")
 talkString :: Parser TalkContent
 talkString = do
-    s <- many1 (noneOf "（＠＊？")
+    s <- manyTill anyChar (specialSyntax <|> callStatement <|> comment)
     return . TalkString . reverse . dropWhile (=='\n') . reverse $ s
+    where
+        callStatement = void (lookAhead $ char '（')
+        comment = void (lookAhead lineComment)
 
 -- |
 -- newline
