@@ -23,7 +23,7 @@ spec = do
     describe "Question" $ do
         it "parse a questions" $ 
             parse question "" "？hoge\nfuga\nhoge\n＿foo  bar\n＿piyo moge\n＊foo" `shouldBe`
-            Right (Question "hoge" "fuga\nhoge\n" ["foo", "piyo"])
+            Right (Question "hoge" "fuga\nhoge\n" [("foo", "bar"), ("piyo", "moge")])
     s <- runIO $ readFile "test/test_dic.txt" 
     describe "dictionary" $ do
         it "parse Dictionary" $
@@ -31,4 +31,4 @@ spec = do
             Right [ ChouchoTalk (Talk {tag = "test", content = [TalkString "talk"]})
                   , ChouchoWords (WordGroup "hoge" ["fuga","foo"])
                   , ChouchoReply (ReplyTalk {keywords = ["my","key","words"], replyContent = [TalkString "hanako\ntaro"]})
-                  , ChouchoQuestion (Question "title" "some\ntext\n" ["piyo","foo"])]
+                  , ChouchoQuestion (Question "title" "some\ntext\n" [("piyo", "moge"),("foo", "bar")])]

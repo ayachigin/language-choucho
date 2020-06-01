@@ -122,7 +122,7 @@ talkContents = do
 -- question
 -- 
 -- >>> parse question "" "？title\nsome\ntext\n\n＿hoge    fuga\npiyo   moge\n\n＠"
--- Right (Question "title" "some\ntext\n\n" ["hoge"])
+-- Right (Question "title" "some\ntext\n\n" [("hoge","fuga")])
 -- 
 question :: Parser Question
 question = do
