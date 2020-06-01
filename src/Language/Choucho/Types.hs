@@ -4,10 +4,6 @@ type Name = String
 
 type Comment = String
 
-data Fomura = 
-    Number Double
-    deriving (Show, Read, Eq)
-
 type Dictionary = [ChouchoTypes]
 
 data ChouchoTypes = 
@@ -20,7 +16,7 @@ data ChouchoTypes =
 data TalkContent = 
     TalkString String |
     Call String |
-    Jump String Fomura |
+    Jump String |
     Comment Comment |
     Newline
     deriving (Show, Read, Eq)
