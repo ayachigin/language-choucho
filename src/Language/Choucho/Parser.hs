@@ -214,5 +214,5 @@ talkString = do
 -- Right Newline
 newline :: Parser TalkContent
 newline = do 
-    string "\r\n" <|> string "\n"
+    try (string "\n\r") <|> string "\n"
     return Newline
