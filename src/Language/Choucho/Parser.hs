@@ -154,7 +154,7 @@ sol = do
 -- |
 -- lineComment
 --
--- >>> parse lineComment "" "＃hoge\r\n"
+-- >>> parse lineComment "" "＃hoge\n\r"
 -- Right (Comment "hoge")
 -- >>> parse lineComment "" "＃hoge\n"
 -- Right (Comment "hoge")
@@ -175,7 +175,7 @@ choices' :: Parser (String, String)
 choices' = do
     sol
     char '＿'
-    name <- many1 $ noneOf " 　"
+    name <- many1 $ noneOf " 　\t"
     skipMany1 space
     label <- many1 $ noneOf "\n\r"
     skipMany (newline <|> lineComment)
