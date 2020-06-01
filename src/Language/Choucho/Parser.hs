@@ -50,6 +50,8 @@ talk = do
 
 joinTalkStrings :: [TalkContent] -> [TalkContent] -> [TalkContent]
 joinTalkStrings acc [] = reverse acc
+joinTalkStrings acc (TalkString "": ls) =
+    joinTalkStrings acc ls
 joinTalkStrings (TalkString s1: acc) (TalkString s2: ls) =
     joinTalkStrings (TalkString (s1<>"\n"<>s2):acc) ls
 joinTalkStrings acc (Comment _: ls) =
