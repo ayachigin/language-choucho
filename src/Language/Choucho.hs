@@ -81,7 +81,10 @@ getWord c s = f $ Map.lookup s $ c ^. wordGroup
         f (Just ws) = Just <$> pickOne ws
 
 parseChoucho :: String -> Either ParseError Choucho
-parseChoucho s = foldl f emptyChoucho <$> parse dictionary "" s
+parseChoucho s = dictionaryToChoucho <$> parse dictionary "" s
+
+dictionaryToChoucho :: Dictionary -> Choucho
+dictionaryToChoucho = foldl f emptyChoucho
     where
         f c (ChouchoTalk t) =
             c & talk %~ Map.insertWith (++) (tag t) [content t]
