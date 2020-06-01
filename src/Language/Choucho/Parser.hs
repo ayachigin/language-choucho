@@ -154,7 +154,7 @@ sol = do
 -- |
 -- lineComment
 --
--- >>> parse lineComment "" "＃hoge\n\r"
+-- >>> parse lineComment "" "＃hoge\r\n"
 -- Right (Comment "hoge")
 -- >>> parse lineComment "" "＃hoge\n"
 -- Right (Comment "hoge")
@@ -202,8 +202,9 @@ call =
 talkString :: Parser TalkContent
 talkString = do
     s <- manyTill anyChar (specialSyntax <|> callStatement <|> comment)
-    return . TalkString . reverse . dropWhile (=='\n') . reverse $ s
+    return . TalkString . reverse . dropWhile isNewline . reverse $ s
     where
+        isNewline x = x == '\n' || x == '\r'
         callStatement = void (lookAhead $ char '（')
         comment = void (lookAhead lineComment)
 
@@ -214,5 +215,5 @@ talkString = do
 -- Right Newline
 newline :: Parser TalkContent
 newline = do 
-    try (string "\n\r") <|> string "\n"
+    try (string "\r\n") <|> string "\n" <|> string "\r"
     return Newline

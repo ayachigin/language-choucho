@@ -18,7 +18,7 @@ spec = do
             Right (TalkString "hogefuga")
     describe "talk" $ do
         it "parse a talk" $ 
-            parse talk "" "＊hoge\nfuga\n\n＊foo" `shouldBe`
+            parse talk "" "＊hoge\nfuga\r\n\r\n＊foo" `shouldBe`
             Right (Talk "hoge" [TalkString "fuga"])
     describe "Question" $ do
         it "parse a questions" $ 
