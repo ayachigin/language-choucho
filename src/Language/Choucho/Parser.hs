@@ -117,7 +117,7 @@ talkContents = do
         talkContent = 
             lineComment <|>
             call <|>
-            newline <|>
+            jump <|> 
             talkString
 
 -- |
@@ -193,6 +193,20 @@ call =
     char '）'
 
 -- |
+-- jump
+-- 
+-- >>> parse jump "" "＞fuga　 \t\r\n"
+-- Right (Jump "fuga")
+jump :: Parser TalkContent
+jump = do
+    sol
+    char '＞'
+    label <- many1 $ noneOf spaces'
+    many $ noneOf "\r\n"
+    return $ Jump label
+    where spaces' = "　 \t\r\n"
+
+-- |
 -- talkString
 --
 -- >>> parse talkString "" "hoge（"
@@ -201,12 +215,16 @@ call =
 -- Right (TalkString "fuga")
 talkString :: Parser TalkContent
 talkString = do
-    s <- manyTill anyChar (specialSyntax <|> callStatement <|> comment)
+    s <- manyTill anyChar ( specialSyntax <|>
+                            callStatement <|>
+                            comment       <|>
+                            jumpSymbol)
     return . TalkString . reverse . dropWhile isNewline . reverse $ s
     where
         isNewline x = x == '\n' || x == '\r'
         callStatement = void (lookAhead $ char '（')
         comment = void (lookAhead lineComment)
+        jumpSymbol = void (sol >> lookAhead (char '＞'))
 
 -- |
 -- newline

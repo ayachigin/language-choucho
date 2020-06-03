@@ -20,6 +20,12 @@ spec = do
         it "parse a talk" $ 
             parse talk "" "＊hoge\nfuga\r\n\r\n＊foo" `shouldBe`
             Right (Talk "hoge" [TalkString "fuga"])
+        it "contains call" $ 
+            parse talk "" "＊hoge\n（fuga）\n＊foo" `shouldBe`
+            Right (Talk "hoge" [Call "fuga"])
+        it "jumps" $ 
+            parse talk "" "＊hoge\n＞fuga\n＊foo" `shouldBe`
+            Right (Talk "hoge" [Jump "fuga"])
     describe "Question" $ do
         it "parse a questions" $ 
             parse question "" "？hoge\nfuga\nhoge\n＿foo  bar\n＿piyo moge\n＊foo" `shouldBe`
