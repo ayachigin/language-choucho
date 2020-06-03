@@ -36,5 +36,5 @@ spec = do
             parse dictionary "" s `shouldBe`
             Right [ ChouchoTalk (Talk {tag = "test", content = [TalkString "talk"]})
                   , ChouchoWords (WordGroup "hoge" ["fuga","foo"])
-                  , ChouchoReply (ReplyTalk {keywords = ["my","key","words"], replyContent = [TalkString "hanako\ntaro"]})
+                  , ChouchoReply (ReplyTalk {keywords = ["my","key","words"], replyContent = [TalkString "hanako", Call "hoge", TalkString "taro", Jump "title"]})
                   , ChouchoQuestion (Question "title" "some\ntext\n" [("piyo", "moge"),("foo", "bar")])]
