@@ -36,15 +36,28 @@ pickOne ls = do
     return $ ls !! ix
 
 getTalk :: Choucho -> Maybe String -> IO [TalkContent]
-getTalk c key = pickOne t
+getTalk c key = do
+    t <- getTalkMaybe c key
+    case t of
+        Just talk -> return talk
+        _         -> pickOne randomTalks
+    where
+        randomTalks = 
+            fromMaybe 
+                [[TalkString "辞書にランダムトークがありません"]] $
+                Map.lookup "" (c^.talk)
+
+getTalkMaybe :: Choucho -> Maybe String -> IO (Maybe [TalkContent])
+getTalkMaybe c key = case t of
+        Just talks -> Just <$> pickOne talks
+        _          -> return Nothing
     where
         key' = fromMaybe "" key
         -- 該当キーのトークを探して、なかったらランダムトークを返す
         -- ランダムトークもなかったらエラーメッセージを返す
-        t = fromMaybe [[TalkString "該当するトークがありません"]] $ 
-                Map.lookup key' (c ^. talk) <|> 
-                Map.lookup "" (c ^. talk)
+        t = Map.lookup key' (c ^. talk)
         l = length t
+ 
 
 getRandomTalk :: Choucho -> IO [TalkContent]
 getRandomTalk c = getTalk c Nothing
